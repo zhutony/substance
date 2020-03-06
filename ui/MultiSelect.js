@@ -43,7 +43,7 @@ export default class MultiSelect extends Component {
         $$(HorizontalStack, {},
           $$(Select, { class: 'se-options', options: notSelectedOptions, placeholder: label })
             .ref('optionSelector')
-            .on('change', this._onAddItem)
+            .on('change', this._onSelect)
         )
       )
     }
@@ -77,12 +77,20 @@ export default class MultiSelect extends Component {
     this.el.emit('change', { value })
   }
 
-  _onAddItem (e) {
+  _onSelect (e) {
     e.stopPropagation()
     const itemValue = this.refs.optionSelector.val()
-    const { value } = this.state
-    value.add(itemValue)
-    this.extendState({ value })
-    this.el.emit('change', { value })
+    const option = this.state.options.find(o => o.value === itemValue)
+    // ATTENTION: preliminary implementation of items that act as actions
+    // TODO: we should redesign this widge using a special
+    // SELECT implementation that also allows for filtering
+    if (option.type === 'action') {
+      this.el.emit('action', itemValue)
+    } else {
+      const { value } = this.state
+      value.add(itemValue)
+      this.extendState({ value })
+      this.el.emit('change', { value })
+    }
   }
 }
