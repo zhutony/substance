@@ -16,7 +16,7 @@ export default class MultiSelect extends Component {
   render () {
     const { options, value } = this.state
     const { label, placeholder } = this.props
-    const selectedOptions = options.filter(option => value.has(option.value))
+    const selectedOptions = Array.from(value).map(v => options.find(o => o.value === v))
     const notSelectedOptions = options.filter(option => !value.has(option.value))
     const allOptionsSelected = selectedOptions.length === options.length
 
@@ -38,15 +38,13 @@ export default class MultiSelect extends Component {
       )
     }
 
-    if (!allOptionsSelected) {
-      el.append(
-        $$(HorizontalStack, {},
-          $$(Select, { class: 'se-options', options: notSelectedOptions, placeholder: label })
-            .ref('optionSelector')
-            .on('change', this._onSelect)
-        )
+    el.append(
+      $$(HorizontalStack, {},
+        $$(Select, { class: 'se-options', options: notSelectedOptions, placeholder: label, disabled: allOptionsSelected })
+          .ref('optionSelector')
+          .on('change', this._onSelect)
       )
-    }
+    )
 
     return el
   }

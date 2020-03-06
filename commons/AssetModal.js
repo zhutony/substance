@@ -39,7 +39,7 @@ export default class AssetModal extends Component {
     const { data, duplicateFileError } = this.state
     const { mode } = this.props
     const title = mode === 'edit' ? 'Edit File' : 'Add File'
-    const confirmLabel = mode === 'edit' ? 'Update File' : 'Create File'
+    const confirmLabel = mode === 'edit' ? 'Update File' : 'Add File'
     const modal = $$(Modal, { title, size: 'medium', confirmLabel, class: 'sc-file-modal', disableConfirm: duplicateFileError })
     const form = $$(Form)
     form.append(
