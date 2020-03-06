@@ -6,7 +6,7 @@ export default class Select extends Component {
     const el = $$('select', { class: 'sc-select' })
     if (placeholder) {
       el.append(
-        $$('option', {}, placeholder)
+        $$('option', { disabled: true, selected: true }, placeholder)
       )
     }
 
