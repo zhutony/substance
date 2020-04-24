@@ -1,4 +1,4 @@
-import { forEach, last, uuid, EventEmitter, platform, isString } from '../util'
+import { forEach, uuid, EventEmitter, platform, isString, getFilenameAndExtension } from '../util'
 import { documentHelpers, DocumentIndex } from '../model'
 import { AbstractEditorSession } from '../editor'
 import ManifestLoader from './ManifestLoader'
@@ -115,7 +115,15 @@ export default class DocumentArchive extends EventEmitter {
     if (blobEntry) {
       return Promise.resolve(blobEntry.blob)
     } else {
-      return this.storage.getBlob(assetId)
+      return new Promise((resolve, reject) => {
+        this.storage.getAssetBlob(this._archiveId, assetId, (err, buffer) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(buffer)
+          }
+        })
+      })
     }
   }
 
@@ -290,7 +298,7 @@ export default class DocumentArchive extends EventEmitter {
   }
 
   getUniqueFileName (filename) {
-    const [name, ext] = _getNameAndExtension(filename)
+    const [name, ext] = getFilenameAndExtension(filename)
     let candidate
     // first try the canonical one
     candidate = `${name}.${ext}`
@@ -505,16 +513,6 @@ export default class DocumentArchive extends EventEmitter {
     })
     return documents
   }
-}
-
-function _getNameAndExtension (name) {
-  const frags = name.split('.')
-  let ext = ''
-  if (frags.length > 1) {
-    ext = last(frags)
-    name = frags.slice(0, frags.length - 1).join('.')
-  }
-  return [name, ext]
 }
 
 class AssetRefCountIndex extends DocumentIndex {
